@@ -1,7 +1,8 @@
 'use strict';
 
 const fetch = require('node-fetch');
-const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 const Files = require('../../models/files');
 const config = require('../../config');
 const { base64_encode, base64_decode } = require('../../utils/files');
@@ -17,7 +18,7 @@ const sendFiles = (req, res, next) => {
 
 const downloadFile = (req, res) => {
   const { fileName } = req.body;
-  const uploadUrl = `${config.apiUrl}/uploads`;
+  const uploadUrl = `/uploads`;
   const filePath = `${uploadUrl}/${fileName}`;
   res.json({ filePath });
 };
@@ -77,11 +78,16 @@ const getProcessedFiles = async (req, res, next) => {
 const deleteProcessedFile = async (req, res, next) => {
   try {
     const { filename } = req.body;
-    await Files.deleteOne(
-      { email: req.query.email, $pull: { 'files.loading': 'processed', 'files.filename': filename } },
+    console.log('>>> ', filename);
+    await Files.updateOne(
+      { email: req.user.email},
+      { $pull: { 'files': { loading: 'processed', filename } } },
       { _id: 0, __v: 0 }
     ).exec();
 
+    const filePath = path.join(__dirname, '../..', 'uploads', filename);
+
+    fs.unlinkSync(filePath);
     res.status(200);
     res.json({ success: true });
   } catch (err) {

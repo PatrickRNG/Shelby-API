@@ -41,7 +41,7 @@ app.use(errorHandler.handleError);
 app.options('*', cors());
 
 exports.start = () => {
-  app.listen(config.port, err => {
+  app.listen(config.port || 4200, err => {
     if (err) {
       console.log(`Error : ${err}`);
       process.exit(-1);
