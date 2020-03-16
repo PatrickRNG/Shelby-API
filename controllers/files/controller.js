@@ -28,7 +28,7 @@ const downloadFile = (req, res) => {
 const processFile = async (req, res, next) => {
   try {
     const { filename } = req.file;
-    const filePath = `${uploadUrl}/${fileName}`;
+    const filePath = `${uploadUrl}/${filename}`;
     const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
 
     const params = {
