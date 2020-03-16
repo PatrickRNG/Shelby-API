@@ -62,13 +62,14 @@ const processFile = async (req, res, next) => {
 const getProcessedFiles = async (req, res, next) => {
   try {
     const processedFiles = await Files.findOne(
-      { email: req.query.email },
+      { email: req.user.email },
       'email files',
       { _id: 0, __v: 0 }
     ).exec();
 
     res.status(200);
-    const response = {...processedFiles.toObject(), success: true };
+    const newFiles = processFiles ? processedFiles.toObject() : {};
+    const response = {...newFiles, success: true };
     res.json(response);
   } catch (err) {
     next(err);
