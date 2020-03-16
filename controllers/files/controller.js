@@ -28,9 +28,12 @@ const downloadFile = (req, res) => {
 const processFile = async (req, res, next) => {
   try {
     const { filename } = req.file;
-    const filePath = `${uploadUrl}/${filename}`;
-    console.log('filePath >>>>>>>>>>>>>> ', filePath)
+    const filePath = `uploads/${filename}`;
     const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
+
+    const test = path.join(__dirname, '../..', 'uploads', filename);
+
+    console.log('\n\n FILEEEE >>>>>>>>>>>>>>>>', filePath, ' ---- ', __dirname, ' ---- ', test, '<<<<<<< \n\n')
 
     const params = {
       'pdf': base64_encode(filePath),

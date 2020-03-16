@@ -20,7 +20,6 @@ if (config.env === "development") {
 exports.connect = () => {
   let mongoURI =
     config.env === "production" || "development" ? config.mongo.uri : config.mongo.testURI;
-  console.log('MONGO >>> ', mongoURI);
 
   mongoose.connect(mongoURI, {
     keepAlive: 1
