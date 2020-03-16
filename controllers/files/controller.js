@@ -18,7 +18,7 @@ const sendFiles = (req, res, next) => {
 
 const downloadFile = (req, res) => {
   const { fileName } = req.body;
-  const uploadUrl = `/uploads`;
+  const uploadUrl = config.env === 'production' ? `${config.apiUrl}/uploads` : `/uploads`;
   const filePath = `${uploadUrl}/${fileName}`;
   res.json({ filePath });
 };
