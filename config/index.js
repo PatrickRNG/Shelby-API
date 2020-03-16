@@ -8,7 +8,7 @@ module.exports = {
   apiUrl: process.env.API_URL,
   dataApiUrl: process.env.DATA_API_URL,
   mongo: {
-    uri: process.env.MONGOURI,
+    uri: process.env.MONGODB_URI,
     testURI: process.env.MONGOTESTURI
   },
   sendgrid: {
