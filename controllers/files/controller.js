@@ -68,7 +68,7 @@ const getProcessedFiles = async (req, res, next) => {
     ).exec();
 
     res.status(200);
-    const newFiles = processFiles ? processedFiles.toObject() : {};
+    const newFiles = processedFiles ? processedFiles.toObject() : {};
     const response = {...newFiles, success: true };
     res.json(response);
   } catch (err) {
