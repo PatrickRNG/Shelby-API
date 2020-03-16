@@ -7,6 +7,9 @@ const Files = require('../../models/files');
 const config = require('../../config');
 const { base64_encode, base64_decode } = require('../../utils/files');
 
+const production = config.env === 'production';
+const uploadUrl =  production ? `${config.apiUrl}/uploads` : `/uploads`;;
+
 const sendFiles = (req, res, next) => {
   try {
     const files = req.files;
@@ -18,7 +21,6 @@ const sendFiles = (req, res, next) => {
 
 const downloadFile = (req, res) => {
   const { fileName } = req.body;
-  const uploadUrl = config.env === 'production' ? `${config.apiUrl}/uploads` : `/uploads`;
   const filePath = `${uploadUrl}/${fileName}`;
   res.json({ filePath });
 };
@@ -26,7 +28,7 @@ const downloadFile = (req, res) => {
 const processFile = async (req, res, next) => {
   try {
     const { filename } = req.file;
-    const filePath = `uploads/${filename}`
+    const filePath = `${uploadUrl}/${fileName}`;
     const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
 
     const params = {
