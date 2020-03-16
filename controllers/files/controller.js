@@ -29,11 +29,12 @@ const processFile = async (req, res, next) => {
   try {
     const { filename } = req.file;
     const filePath = `${uploadUrl}/${filename}`;
+    console.log('filePath >>>>>>>>>>>>>> ', filePath)
     const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
 
     const params = {
       'pdf': base64_encode(filePath),
-      'factor': 7, 
+      'factor': 7,
       'words': 15,
       'max_diff': 0.2,
       'min_sim' : 0.6
