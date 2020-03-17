@@ -36,6 +36,10 @@ const processFile = async (req, res, next) => {
     const filePath = path.join(__dirname, '../..', 'uploads', filename);
     const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
 
+    // const pdfFinal = production ? uploadFile(decodedFile, filename) : base64_encode(filePath);
+    
+    console.log('test >>>>>>>>>>>>>>>>>>>>>>>>', filePath);
+
     const params = {
       pdf: base64_encode(filePath),
       factor: 7,
