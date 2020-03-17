@@ -6,7 +6,7 @@ const router = express.Router();
 
 const auth = require('../../../middlewares/authorization');
 const {
-  sendFiles,
+  // sendFiles,
   downloadFile,
   getProcessedFiles,
   processFile,
@@ -31,7 +31,7 @@ const upload = multer({
   storage
 });
 
-router.post('/upload', auth(['user']), upload.array('files'), sendFiles);
+// router.post('/upload', auth(['user']), upload.array('files'), sendFiles);
 router.post('/download', auth(['user']), downloadFile);
 router.post('/process', auth(['user']), upload.single('file'), processFile);
 router.get('/processed', auth(['user']), getProcessedFiles);

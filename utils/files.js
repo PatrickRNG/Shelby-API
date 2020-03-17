@@ -1,5 +1,4 @@
 const fs = require('fs');
-const fetch = require('node-fetch');
 
 function base64_encode(file) {
     // read binary data
@@ -8,14 +7,21 @@ function base64_encode(file) {
     return new Buffer(bitmap).toString('base64');
 }
 
-function base64_decode(base64str, file) {
+function base64_decode(base64str) {
+  return new Promise((resolve, reject) => {
     // create buffer object from base64 encoded string
     const bitmap = new Buffer(base64str, 'base64');
     // write buffer to file
-    fs.writeFileSync(file, bitmap);
+    resolve(bitmap);
+  })
+}
+
+function localUploadFile(filePath, fileData) {
+  fs.writeFileSync(filePath, fileData);
 }
 
 module.exports = {
   base64_encode,
-  base64_decode
+  base64_decode,
+  localUploadFile
 }

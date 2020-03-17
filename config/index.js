@@ -15,5 +15,9 @@ module.exports = {
     apiKey: process.env.SEND_GRID_API,
     email: process.env.SEND_GRID_EMAIL,
     name: process.env.SEND_GRID_NAME
-  }
+  },
+  s3Bucket: process.env.S3_BUCKET,
+  awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  awsPublicUrl: process.env.AWS_PUBLIC_URL,
 }
