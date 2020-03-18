@@ -3,6 +3,8 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
+const temp = require('temp').track();
+
 const Files = require('../../models/files');
 const config = require('../../config');
 const {
@@ -14,19 +16,27 @@ const { uploadFile, deleteFile, getFile } = require('../../services/s3');
 
 const production = config.env === 'production';
 
-const saveFileS3 = async fileName => {
-  const saveFilePath = production
-    ? `${config.fileUrl}/${fileName}`
-    : path.join(__dirname, '../..', 'uploads', fileName);
-  await getFile(saveFilePath, fileName);
-};
+// const saveS3FileLocal = async fileName => {
+//   const saveFilePath = production
+//     ? `${config.fileUrl}/${fileName}`
+//     : path.join(__dirname, '../..', 'tmp', fileName);
+//   await getFile(saveFilePath, fileName);
+// };
 
 const downloadFile = async (req, res, next) => {
   try {
     const { fileName } = req.body;
-    await saveFileS3(fileName);
-
-    const filePath = `${config.fileUrl}/${fileName}`;
+    const dirPath = temp.mkdirSync('temp-upload');
+    const tmpPath = path.join(dirPath, fileName);
+    const s3Object = getFile(fileName);
+    if (production) {
+      fs.writeFileSync(tmpPath, s3Object)
+    };
+    const filePath = fs.readFileSync(tmpPath);
+    
+    
+    // const filePath = `${config.fileUrl}/${fileName}`;
+    
     res.json({ filePath });
   } catch (err) {
     next(err);
@@ -36,18 +46,22 @@ const downloadFile = async (req, res, next) => {
 const processFile = async (req, res, next) => {
   try {
     const { filename } = req.file;
-    const filePath = production
-      ? `${config.fileUrl}/${fileName}`
-      : path.join(__dirname, '../..', 'uploads', fileName);
-    const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
+    const dirPath = temp.mkdirSync('temp-upload');
+    const tmpPath = path.join(dirPath, filename);
+    fs.writeFileSync(tmpPath, req.file);
+    // const filePath = production
+    //   ? `${config.fileUrl}/${fileName}`
+    //   : path.join(__dirname, '../..', 'tmp', fileName);
 
     const params = {
-      pdf: base64_encode(filePath),
+      pdf: base64_encode(tmpPath),
       factor: 7,
       words: 15,
       max_diff: 0.2,
       min_sim: 0.6
     };
+
+    const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
 
     const response = await fetch(dataApiUrl, {
       method: 'POST',
@@ -59,11 +73,12 @@ const processFile = async (req, res, next) => {
     const decodedFile = await base64_decode(result.pdf);
 
     // Upload file to S3 or local;
-    if (!production) {
-      localUploadFile(filePath, decodedFile);
-    } else {
+    if (production) {
       await uploadFile(decodedFile, filename);
-      await saveFileS3(filename);
+      // localUploadFile(filePath, decodedFile);
+      // await saveFileS3(filename);
+    } else {
+      fs.writeFileSync(tmpPath, decodedFile);
     }
 
     // Update database with file info
@@ -109,7 +124,7 @@ const deleteProcessedFile = async (req, res, next) => {
       { _id: 0, __v: 0 }
     ).exec();
 
-    const filePath = path.join(__dirname, '../..', 'uploads', filename);
+    const filePath = path.join(__dirname, '../..', 'tmp', filename);
 
     production ? await deleteFile(filename) : fs.unlinkSync(filePath);
 

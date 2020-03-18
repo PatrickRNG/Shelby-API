@@ -44,7 +44,7 @@ const deleteFile = async (fileName) => {
   }
 };
 
-const getFile = async (filePath, fileName) => {
+const getFile = async (fileName) => {
   try {
     console.log('\n\n\n >>>>>>>>>>>>>>>>>>>> FILEEE ', filePath, '  ---  ', fileName);
     const params = {
@@ -52,8 +52,8 @@ const getFile = async (filePath, fileName) => {
       Key: fileName,
     };
     
-    const data = await s3.getObject(params).promise();
-    fs.writeFileSync(filePath, data.Body);
+    return await s3.getObject(params).promise();
+    // fs.writeFileSync(filePath, data.Body);
   } catch (err) {
     throw new Error(`Could not retrieve file from S3: ${err.message}`);
   }

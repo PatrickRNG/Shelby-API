@@ -31,8 +31,8 @@ if (config.env !== 'test') app.use(morgan('combined'));
 app.use(passport.initialize());
 passport.use('jwt', passportJwt.jwt);
 
-const uploadsPath = path.join(__dirname, '..', 'uploads');
-app.use('/uploads', express.static(uploadsPath));
+const uploadsPath = path.join(__dirname, '..', 'tmp');
+app.use('/tmp', express.static(uploadsPath));
 
 app.use('/api', apiRouter);
 app.use(errorHandler.handleNotFound);
