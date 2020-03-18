@@ -5,14 +5,13 @@ const config = require('../config');
 const ID = config.awsAccessKeyId;
 const SECRET = config.awsSecretAccessKey;
 const BUCKET = config.s3Bucket;
-const BUCKET = config.s3BucketTmp;
 
 const s3 = new AWS.S3({
   accessKeyId: ID,
   secretAccessKey: SECRET
 });
 
-const uploadFile = async (fileContent, fileName, isTmp) => {
+const uploadFile = async (fileContent, fileName) => {
   try {
     // Setting up S3 upload parameters
     const params = {
