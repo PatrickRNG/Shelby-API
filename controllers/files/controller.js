@@ -25,6 +25,8 @@ const production = config.env === 'production';
 
 const downloadFile = async (req, res, next) => {
   try {
+    console.log('\n\n >>>>>>>>>>>>', path.join(__dirname, '/tmp/'));
+
     const { fileName } = req.body;
     const dirPath = temp.mkdirSync('temp-upload');
     const tmpPath = path.join(config.apiUrl, dirPath, fileName);
