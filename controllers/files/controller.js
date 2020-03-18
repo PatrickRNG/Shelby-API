@@ -20,6 +20,7 @@ const saveFileS3 = async (fileName) => {
 const downloadFile = async (req, res, next) => {
   try {
     const { fileName } = req.body;
+    await saveFileS3(filename);
     
     const filePath = `${config.apiUrl}/uploads/${fileName}`;
     res.json({ filePath });
@@ -50,9 +51,14 @@ const processFile = async (req, res, next) => {
     const result = await response.json();
     // Update /uploads with the processed file
     const decodedFile = await base64_decode(result.pdf);
+
     // Upload file to S3 or local;
-    production ? await uploadFile(decodedFile, filename) : localUploadFile(filePath, decodedFile);
-    await saveFileS3(filename);
+    if (!production) {
+      localUploadFile(filePath, decodedFile);
+    } else {
+      await uploadFile(decodedFile, filename)
+      await saveFileS3(filename);
+    }
 
     // Update database with file info
     await Files.findOneAndUpdate(
