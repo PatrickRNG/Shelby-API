@@ -46,7 +46,7 @@ const processFile = async (req, res, next) => {
     const herokuPath = production ? path.join(__dirname, '../../..', 'tmp', filename) : path.join(__dirname, '../..', 'tmp', filename);
     const tmpFile = fs.readFileSync(herokuPath);
 
-    console.log('\n\n TESTTTTT 1', testRead);
+    console.log('\n\n TESTTTTT 1', tmpFile);
 
     const params = {
       pdf: base64_encode(tmpFile),
