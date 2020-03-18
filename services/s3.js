@@ -1,5 +1,7 @@
 const AWS = require('aws-sdk');
+const fs = require('fs');
 const config = require('../config');
+const { base64_decode } = require('../utils/files');
 
 const ID = config.awsAccessKeyId;
 const SECRET = config.awsSecretAccessKey;
@@ -10,44 +12,55 @@ const s3 = new AWS.S3({
   secretAccessKey: SECRET
 });
 
-const uploadFile = (fileContent, fileName) => {
-  // Setting up S3 upload parameters
-  const params = {
-    Bucket: BUCKET,
-    Key: fileName,
-    Body: fileContent
-  };
+const uploadFile = async (fileContent, fileName) => {
+  try {
 
-  // Uploading files to the bucket
-  s3.upload(params, function(err, data) {
-    if (err) {
-      throw err;
-    }
-    console.log(`File uploaded successfully. ${data.Location}`);
-  });
+    // Setting up S3 upload parameters
+    const params = {
+      Bucket: BUCKET,
+      Key: fileName,
+      Body: fileContent
+    };
+    
+    // Uploading files to the bucket
+    await s3.upload(params).promise();
+  } catch (err) {
+    throw new Error(`Could not upload file to S3: ${err.message}`);
+  }
 };
 
-const deleteFile = (fileName) => {
-  // Read content from the file
-  // const fileContent = fs.readFileSync(filePath);
+const deleteFile = async (fileName) => {
+  try {
 
-  // Setting up S3 upload parameters
-  const params = {
-    Bucket: BUCKET,
-    Key: fileName,
-  };
-
-  // Uploading files to the bucket
-  s3.deleteObject(params, function(err, data) {
-    if (err) {
-      throw err;
-    }
-    console.log('File deleted successfully.', data);
-  });
+    // Setting up S3 upload parameters
+    const params = {
+      Bucket: BUCKET,
+      Key: fileName,
+    };
+    
+    // Uploading files to the bucket
+    await s3.deleteObject(params).promise();
+  } catch (err) {
+    throw new Error(`Could not delete file from S3: ${err.message}`);
+  }
 };
 
+const getFile = async (filePath, fileName) => {
+  try {
+    const params = {
+      Bucket: BUCKET,
+      Key: fileName,
+    };
+    
+    const data = await s3.getObject(params).promise();
+    fs.writeFileSync(filePath, data.Body);
+  } catch (err) {
+    throw new Error(`Could not retrieve file from S3: ${err.message}`);
+  }
+};
 
 module.exports = {
   uploadFile,
-  deleteFile
+  deleteFile,
+  getFile
 };

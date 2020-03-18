@@ -6,7 +6,6 @@ const router = express.Router();
 
 const auth = require('../../../middlewares/authorization');
 const {
-  // sendFiles,
   downloadFile,
   getProcessedFiles,
   processFile,

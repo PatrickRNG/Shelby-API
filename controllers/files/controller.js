@@ -6,28 +6,26 @@ const path = require('path');
 const Files = require('../../models/files');
 const config = require('../../config');
 const { base64_encode, base64_decode, localUploadFile } = require('../../utils/files');
-const { uploadFile, deleteFile } = require('../../services/s3');
+const { uploadFile, deleteFile, getFile } = require('../../services/s3');
 
 const production = config.env === 'production';
 
-const buildFileUrl = fileName =>
-  production
-    ? `${config.awsPublicUrl}/${fileName}`
-    : `${config.apiUrl}/uploads`;
 
-// const sendFiles = (req, res, next) => {
-//   try {
-//     const files = req.files;
-//     res.json({ files });
-//   } catch (error) {
-//     return next(error);
-//   }
-// };
 
-const downloadFile = (req, res) => {
-  const { fileName } = req.body;
-  const filePath = buildFileUrl(fileName);
-  res.json({ filePath });
+const saveFileS3 = async (fileName) => {
+  const saveFilePath = path.join(__dirname, '../..', 'uploads', fileName);
+  await getFile(saveFilePath, fileName);
+}
+
+const downloadFile = async (req, res, next) => {
+  try {
+    const { fileName } = req.body;
+    
+    const filePath = `${config.apiUrl}/uploads/${fileName}`;
+    res.json({ filePath });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const processFile = async (req, res, next) => {
@@ -35,10 +33,6 @@ const processFile = async (req, res, next) => {
     const { filename } = req.file;
     const filePath = path.join(__dirname, '../..', 'uploads', filename);
     const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
-
-    // const pdfFinal = production ? uploadFile(decodedFile, filename) : base64_encode(filePath);
-    
-    console.log('test >>>>>>>>>>>>>>>>>>>>>>>>', filePath);
 
     const params = {
       pdf: base64_encode(filePath),
@@ -57,7 +51,8 @@ const processFile = async (req, res, next) => {
     // Update /uploads with the processed file
     const decodedFile = await base64_decode(result.pdf);
     // Upload file to S3 or local;
-    production ? uploadFile(decodedFile, filename) : localUploadFile(filePath, decodedFile);
+    production ? await uploadFile(decodedFile, filename) : localUploadFile(filePath, decodedFile);
+    await saveFileS3(filename);
 
     // Update database with file info
     await Files.findOneAndUpdate(
@@ -104,7 +99,7 @@ const deleteProcessedFile = async (req, res, next) => {
 
     const filePath = path.join(__dirname, '../..', 'uploads', filename);
 
-    production ? deleteFile(filename) : fs.unlinkSync(filePath);
+    production ? await deleteFile(filename) : fs.unlinkSync(filePath);
 
     res.status(200);
     res.json({ success: true });
@@ -114,7 +109,6 @@ const deleteProcessedFile = async (req, res, next) => {
 };
 
 module.exports = {
-  // sendFiles,
   downloadFile,
   getProcessedFiles,
   processFile,
