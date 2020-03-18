@@ -27,10 +27,10 @@ const downloadFile = async (req, res, next) => {
   try {
     const { fileName } = req.body;
     const dirPath = temp.mkdirSync('temp-upload');
-    const tmpPath = path.join(dirPath, fileName);
-    const s3Object = getFile(fileName);
+    const tmpPath = path.join(config.apiUrl, dirPath, fileName);
+    const s3Object = await getFile(fileName);
     if (production) {
-      fs.writeFileSync(tmpPath, s3Object)
+      fs.writeFileSync(tmpPath, s3Object);
     };
     // const filePath = fs.readFileSync(tmpPath);
     console.log('\n\n 111111 FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', tmpPath);
