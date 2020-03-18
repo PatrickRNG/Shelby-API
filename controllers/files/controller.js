@@ -21,7 +21,7 @@ const downloadFile = async (req, res, next) => {
 
     const { fileName } = req.body;
     const s3Object = await getFile(fileName);
-    const filePath = fs.readFileSync(tmpPath);
+    // const filePath = fs.readFileSync(tmpPath);
     if (production) {
       fs.writeFileSync(filePath, s3Object);
     };
