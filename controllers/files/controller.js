@@ -20,7 +20,7 @@ const saveFileS3 = async (fileName) => {
 const downloadFile = async (req, res, next) => {
   try {
     const { fileName } = req.body;
-    await saveFileS3(filename);
+    await saveFileS3(fileName);
     
     const filePath = `${config.apiUrl}/uploads/${fileName}`;
     res.json({ filePath });
