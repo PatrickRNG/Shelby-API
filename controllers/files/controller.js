@@ -42,14 +42,13 @@ const processFile = async (req, res, next) => {
     console.log('\n\n FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', req.file);
 
     const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
+    const herokuPath = path.join(__dirname, '../../..', 'tmp', filename);
+    const localPath = path.join(__dirname, '../..', 'tmp', filename);
 
-    const herokuPath = production ? path.join(__dirname, '../../..', 'tmp', filename) : path.join(__dirname, '../..', 'tmp', filename);
-    const tmpFile = fs.readFileSync(herokuPath);
-
-    console.log('\n\n TESTTTTT 1', tmpFile);
+    const filePath = production ? herokuPath : localPath;
 
     const params = {
-      pdf: base64_encode(herokuPath),
+      pdf: base64_encode(filePath),
       factor: 7,
       words: 15,
       max_diff: 0.2,
@@ -62,10 +61,11 @@ const processFile = async (req, res, next) => {
     });
 
     const result = await response.json();
-    console.log('\n\n RESULT >>>>>>>>>>>>>>', result);
-    const decodedFile = await base64_decode(result.pdf);
+    const processedFile = await base64_decode(result.pdf);
     
-    console.log('\n\n DECODED BUFFER >>>>>>>>>>>>>>', decodedFile);
+    console.log('\n\n DECODED BUFFER >>>>>>>>>>>>>>', processedFile);
+
+    production ? uploadFile(processFile, filename) : localUploadFile(filePath, processFile);
     
     // const filePath = production
     //   ? `${config.fileUrl}/${fileName}`
