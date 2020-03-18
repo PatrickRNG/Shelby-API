@@ -43,28 +43,29 @@ const processFile = async (req, res, next) => {
 
     const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
 
-    const testRead = fs.readFileSync(path.join(__dirname, '../../..', 'tmp', filename));
+    const herokuPath = production ? path.join(__dirname, '../../..', 'tmp', filename) : path.join(__dirname, '../..', 'tmp', filename);
+    const tmpFile = fs.readFileSync(herokuPath);
+
     console.log('\n\n TESTTTTT 1', testRead);
-    const testRead2 = fs.readFileSync(req.file);
-    console.log('\n\n TESTTTTT 2', testRead2);
 
+    const params = {
+      pdf: base64_encode(tmpFile),
+      factor: 7,
+      words: 15,
+      max_diff: 0.2,
+      min_sim: 0.6
+    };
 
-    // const params = {
-    //   pdf: base64_encode(tmpPath),
-    //   factor: 7,
-    //   words: 15,
-    //   max_diff: 0.2,
-    //   min_sim: 0.6
-    // };
+    const response = await fetch(dataApiUrl, {
+      method: 'POST',
+      body: JSON.stringify(params)
+    });
 
-    // const response = await fetch(dataApiUrl, {
-    //   method: 'POST',
-    //   body: JSON.stringify(params)
-    // });
-
-    // const result = await response.json();
-    // const decodedFile = await base64_decode(result.pdf);
-    // console.log('\n\n DECODED BUFFER >>>>>>>>>>>>>>', decodedFile);
+    const result = await response.json();
+    const decodedFile = await base64_decode(result.pdf);
+    
+    console.log('\n\n DECODED BUFFER >>>>>>>>>>>>>>', decodedFile);
+    
     // const filePath = production
     //   ? `${config.fileUrl}/${fileName}`
     //   : path.join(__dirname, '../..', 'tmp', fileName);
