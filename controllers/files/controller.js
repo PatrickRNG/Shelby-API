@@ -15,7 +15,9 @@ const { uploadFile, deleteFile, getFile } = require('../../services/s3');
 const production = config.env === 'production';
 
 const saveFileS3 = async fileName => {
-  const saveFilePath = path.join(__dirname, '../..', 'uploads', fileName);
+  const saveFilePath = production
+    ? `${config.fileUrl}/${fileName}`
+    : path.join(__dirname, '../..', 'uploads', fileName);
   await getFile(saveFilePath, fileName);
 };
 
@@ -24,9 +26,7 @@ const downloadFile = async (req, res, next) => {
     const { fileName } = req.body;
     await saveFileS3(fileName);
 
-    const filePath = production
-      ? path.join(__dirname, '../..', 'uploads', filename)
-      : `${config.apiUrl}/uploads/${fileName}`;
+    const filePath = `${config.fileUrl}/${fileName}`;
     res.json({ filePath });
   } catch (err) {
     next(err);
@@ -36,7 +36,9 @@ const downloadFile = async (req, res, next) => {
 const processFile = async (req, res, next) => {
   try {
     const { filename } = req.file;
-    const filePath = path.join(__dirname, '../..', 'uploads', filename);
+    const filePath = production
+      ? `${config.fileUrl}/${fileName}`
+      : path.join(__dirname, '../..', 'uploads', fileName);
     const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
 
     const params = {

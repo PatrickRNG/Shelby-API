@@ -20,4 +20,5 @@ module.exports = {
   awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
   awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   awsPublicUrl: process.env.AWS_PUBLIC_URL,
+  fileUrl = `${this.apiUrl}/uploads`,
 }
