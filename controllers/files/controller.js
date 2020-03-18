@@ -65,7 +65,7 @@ const processFile = async (req, res, next) => {
     
     console.log('\n\n DECODED BUFFER >>>>>>>>>>>>>>', processedFile);
 
-    production ? uploadFile(processFile, filename) : localUploadFile(filePath, processFile);
+    production ? uploadFile(processedFile, filename) : localUploadFile(filePath, processedFile);
     
     // const filePath = production
     //   ? `${config.fileUrl}/${fileName}`
