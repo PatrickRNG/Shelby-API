@@ -11,7 +11,6 @@ function base64_decode(base64str) {
   return new Promise((resolve, reject) => {
     // create buffer object from base64 encoded string
     const bitmap = new Buffer(base64str, 'base64');
-    // write buffer to file
     resolve(bitmap);
   })
 }

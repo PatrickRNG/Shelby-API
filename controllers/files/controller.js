@@ -40,28 +40,29 @@ const processFile = async (req, res, next) => {
   try {
     const { filename } = req.file;
     console.log('\n\n FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', req.file);
+
+    const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
+    const params = {
+      pdf: base64_encode(tmpPath),
+      factor: 7,
+      words: 15,
+      max_diff: 0.2,
+      min_sim: 0.6
+    };
+
+    const response = await fetch(dataApiUrl, {
+      method: 'POST',
+      body: JSON.stringify(params)
+    });
+
+    const result = await response.json();
+    const decodedFile = await base64_decode(result.pdf);
+    console.log('\n\n DECODED BUFFER >>>>>>>>>>>>>>', decodedFile);
     // const filePath = production
     //   ? `${config.fileUrl}/${fileName}`
     //   : path.join(__dirname, '../..', 'tmp', fileName);
 
-    // const params = {
-    //   pdf: base64_encode(tmpPath),
-    //   factor: 7,
-    //   words: 15,
-    //   max_diff: 0.2,
-    //   min_sim: 0.6
-    // };
-
-    // const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
-
-    // const response = await fetch(dataApiUrl, {
-    //   method: 'POST',
-    //   body: JSON.stringify(params)
-    // });
-
-    // const result = await response.json();
     // // Update /uploads with the processed file
-    // const decodedFile = await base64_decode(result.pdf);
 
     // // Upload file to S3 or local;
     // if (production) {
