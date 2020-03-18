@@ -46,7 +46,7 @@ const deleteFile = async (fileName) => {
 
 const getFile = async (fileName) => {
   try {
-    console.log('\n\n\n >>>>>>>>>>>>>>>>>>>> FILEEE ', filePath, '  ---  ', fileName);
+    console.log('\n\n\n >>>>>>>>>>>>>>>>>>>> FILEEE ', fileName);
     const params = {
       Bucket: BUCKET,
       Key: fileName,
