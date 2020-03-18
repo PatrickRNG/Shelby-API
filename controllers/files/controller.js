@@ -43,7 +43,7 @@ const processFile = async (req, res, next) => {
 
     const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
 
-    const testRead = fs.readFileSync(path.join(__dirname, '../..', 'tmp', filename));
+    const testRead = fs.readFileSync(path.join(__dirname, '../../..', 'tmp', filename));
     console.log('\n\n TESTTTTT 1', testRead);
     const testRead2 = fs.readFileSync(req.file);
     console.log('\n\n TESTTTTT 2', testRead2);
