@@ -32,12 +32,13 @@ const downloadFile = async (req, res, next) => {
     if (production) {
       fs.writeFileSync(tmpPath, s3Object)
     };
-    const filePath = fs.readFileSync(tmpPath);
+    // const filePath = fs.readFileSync(tmpPath);
+    console.log('\n\n 111111 FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', tmpPath);
     
     
     // const filePath = `${config.fileUrl}/${fileName}`;
     
-    res.json({ filePath });
+    res.json({ filePath: tmpPath });
   } catch (err) {
     next(err);
   }
@@ -45,6 +46,7 @@ const downloadFile = async (req, res, next) => {
 
 const processFile = async (req, res, next) => {
   try {
+    console.log('\n\n FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', req.file);
     const { filename } = req.file;
     const dirPath = temp.mkdirSync('temp-upload');
     const tmpPath = path.join(dirPath, filename);
