@@ -5,24 +5,28 @@ const fs = require('fs');
 const path = require('path');
 const Files = require('../../models/files');
 const config = require('../../config');
-const { base64_encode, base64_decode, localUploadFile } = require('../../utils/files');
+const {
+  base64_encode,
+  base64_decode,
+  localUploadFile
+} = require('../../utils/files');
 const { uploadFile, deleteFile, getFile } = require('../../services/s3');
 
 const production = config.env === 'production';
 
-
-
-const saveFileS3 = async (fileName) => {
+const saveFileS3 = async fileName => {
   const saveFilePath = path.join(__dirname, '../..', 'uploads', fileName);
   await getFile(saveFilePath, fileName);
-}
+};
 
 const downloadFile = async (req, res, next) => {
   try {
     const { fileName } = req.body;
     await saveFileS3(fileName);
-    
-    const filePath = `${config.apiUrl}/uploads/${fileName}`;
+
+    const filePath = production
+      ? path.join(__dirname, '../..', 'uploads', filename)
+      : `${config.apiUrl}/uploads/${fileName}`;
     res.json({ filePath });
   } catch (err) {
     next(err);
@@ -56,7 +60,7 @@ const processFile = async (req, res, next) => {
     if (!production) {
       localUploadFile(filePath, decodedFile);
     } else {
-      await uploadFile(decodedFile, filename)
+      await uploadFile(decodedFile, filename);
       await saveFileS3(filename);
     }
 

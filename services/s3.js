@@ -1,7 +1,6 @@
 const AWS = require('aws-sdk');
 const fs = require('fs');
 const config = require('../config');
-const { base64_decode } = require('../utils/files');
 
 const ID = config.awsAccessKeyId;
 const SECRET = config.awsSecretAccessKey;
