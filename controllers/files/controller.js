@@ -3,7 +3,6 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
-const temp = require('temp').track();
 
 const Files = require('../../models/files');
 const config = require('../../config');
@@ -16,29 +15,20 @@ const { uploadFile, deleteFile, getFile } = require('../../services/s3');
 
 const production = config.env === 'production';
 
-// const saveS3FileLocal = async fileName => {
-//   const saveFilePath = production
-//     ? `${config.fileUrl}/${fileName}`
-//     : path.join(__dirname, '../..', 'tmp', fileName);
-//   await getFile(saveFilePath, fileName);
-// };
-
 const downloadFile = async (req, res, next) => {
   try {
     console.log('\n\n >>>>>>>>>>>>', path.join(__dirname, '/tmp/'));
 
     const { fileName } = req.body;
-    const dirPath = temp.mkdirSync('temp-upload');
-    const tmpPath = path.join(config.apiUrl, dirPath, fileName);
     const s3Object = await getFile(fileName);
+    const filePath = fs.readFileSync(tmpPath);
     if (production) {
-      fs.writeFileSync(tmpPath, s3Object);
+      fs.writeFileSync(filePath, s3Object);
     };
-    // const filePath = fs.readFileSync(tmpPath);
     console.log('\n\n 111111 FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', tmpPath);
     
     
-    // const filePath = `${config.fileUrl}/${fileName}`;
+    const filePath = `${config.fileUrl}/${fileName}`;
     
     res.json({ filePath: tmpPath });
   } catch (err) {
@@ -48,52 +38,49 @@ const downloadFile = async (req, res, next) => {
 
 const processFile = async (req, res, next) => {
   try {
-    console.log('\n\n FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', req.file);
     const { filename } = req.file;
-    const dirPath = temp.mkdirSync('temp-upload');
-    const tmpPath = path.join(dirPath, filename);
-    fs.writeFileSync(tmpPath, req.file);
+    console.log('\n\n FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', req.file);
     // const filePath = production
     //   ? `${config.fileUrl}/${fileName}`
     //   : path.join(__dirname, '../..', 'tmp', fileName);
 
-    const params = {
-      pdf: base64_encode(tmpPath),
-      factor: 7,
-      words: 15,
-      max_diff: 0.2,
-      min_sim: 0.6
-    };
+    // const params = {
+    //   pdf: base64_encode(tmpPath),
+    //   factor: 7,
+    //   words: 15,
+    //   max_diff: 0.2,
+    //   min_sim: 0.6
+    // };
 
-    const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
+    // const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
 
-    const response = await fetch(dataApiUrl, {
-      method: 'POST',
-      body: JSON.stringify(params)
-    });
+    // const response = await fetch(dataApiUrl, {
+    //   method: 'POST',
+    //   body: JSON.stringify(params)
+    // });
 
-    const result = await response.json();
-    // Update /uploads with the processed file
-    const decodedFile = await base64_decode(result.pdf);
+    // const result = await response.json();
+    // // Update /uploads with the processed file
+    // const decodedFile = await base64_decode(result.pdf);
 
-    // Upload file to S3 or local;
-    if (production) {
-      await uploadFile(decodedFile, filename);
-      // localUploadFile(filePath, decodedFile);
-      // await saveFileS3(filename);
-    } else {
-      fs.writeFileSync(tmpPath, decodedFile);
-    }
+    // // Upload file to S3 or local;
+    // if (production) {
+    //   await uploadFile(decodedFile, filename);
+    //   // localUploadFile(filePath, decodedFile);
+    //   // await saveFileS3(filename);
+    // } else {
+    //   fs.writeFileSync(filePath, decodedFile);
+    // }
 
-    // Update database with file info
-    await Files.findOneAndUpdate(
-      { email: req.user.email },
-      {
-        email: req.user.email,
-        $addToSet: { files: { ...req.file, loading: 'processed' } }
-      },
-      { upsert: true, new: true }
-    ).exec();
+    // // Update database with file info
+    // await Files.findOneAndUpdate(
+    //   { email: req.user.email },
+    //   {
+    //     email: req.user.email,
+    //     $addToSet: { files: { ...req.file, loading: 'processed' } }
+    //   },
+    //   { upsert: true, new: true }
+    // ).exec();
 
     res.json({ file: req.file, success: true });
     res.status(200);
