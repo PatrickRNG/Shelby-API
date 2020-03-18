@@ -49,7 +49,7 @@ const processFile = async (req, res, next) => {
     console.log('\n\n TESTTTTT 1', tmpFile);
 
     const params = {
-      pdf: base64_encode(tmpFile),
+      pdf: base64_encode(herokuPath),
       factor: 7,
       words: 15,
       max_diff: 0.2,
@@ -62,6 +62,7 @@ const processFile = async (req, res, next) => {
     });
 
     const result = await response.json();
+    console.log('\n\n RESULT >>>>>>>>>>>>>>', result);
     const decodedFile = await base64_decode(result.pdf);
     
     console.log('\n\n DECODED BUFFER >>>>>>>>>>>>>>', decodedFile);
