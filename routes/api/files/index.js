@@ -31,7 +31,7 @@ const upload = multer({
 });
 
 // router.post('/upload', auth(['user']), upload.array('files'), sendFiles);
-router.post('/download', auth(['user']), downloadFile);
+router.get('/download', auth(['user']), downloadFile);
 router.post('/process', auth(['user']), upload.single('file'), processFile);
 router.get('/processed', auth(['user']), getProcessedFiles);
 router.delete('/delete', auth(['user']), deleteProcessedFile);

@@ -19,7 +19,7 @@ const uploadFile = async (fileContent, fileName) => {
       Key: fileName,
       Body: fileContent
     };
-    
+
     // Uploading files to the bucket
     await s3.upload(params).promise();
   } catch (err) {
@@ -27,15 +27,14 @@ const uploadFile = async (fileContent, fileName) => {
   }
 };
 
-const deleteFile = async (fileName) => {
+const deleteFile = async fileName => {
   try {
-
     // Setting up S3 upload parameters
     const params = {
       Bucket: BUCKET,
-      Key: fileName,
+      Key: fileName
     };
-    
+
     // Uploading files to the bucket
     await s3.deleteObject(params).promise();
   } catch (err) {
@@ -43,15 +42,28 @@ const deleteFile = async (fileName) => {
   }
 };
 
-const getFile = async (fileName) => {
+const getFile = async fileName => {
   try {
     const params = {
       Bucket: BUCKET,
-      Key: fileName,
+      Key: fileName
     };
-    
-    return await s3.getObject(params).promise();
+
+    return await s3.getObject(params).createReadStream();
     // fs.writeFileSync(filePath, data.Body);
+  } catch (err) {
+    throw new Error(`Could not retrieve file from S3: ${err.message}`);
+  }
+};
+
+const getDownloadUrl = fileName => {
+  try {
+    const params = {
+      Bucket: BUCKET,
+      Key: fileName
+    };
+
+    return s3.getSignedUrl('getObject', params);
   } catch (err) {
     throw new Error(`Could not retrieve file from S3: ${err.message}`);
   }
@@ -60,5 +72,6 @@ const getFile = async (fileName) => {
 module.exports = {
   uploadFile,
   deleteFile,
-  getFile
+  getFile,
+  getDownloadUrl
 };
