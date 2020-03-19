@@ -15,22 +15,23 @@ const { uploadFile, deleteFile, getFile } = require('../../services/s3');
 
 const production = config.env === 'production';
 
+const buildFilePath = fileName => ({
+  localPath: path.join(__dirname, '../..', 'tmp', filename),
+  herokuPath: path.join(__dirname, '../../..', 'tmp', filename)
+});
+
 const downloadFile = async (req, res, next) => {
   try {
-    console.log('\n\n >>>>>>>>>>>>', path.join(__dirname, '/tmp/'));
-
     const { fileName } = req.body;
     const s3Object = await getFile(fileName);
-    // const filePath = fs.readFileSync(tmpPath);
-    if (production) {
-      fs.writeFileSync(filePath, s3Object);
-    };
-    console.log('\n\n 111111 FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', tmpPath);
+    console.log('\n\n 111111 FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', s3Object);
+    const { herokuPath, localPath } = buildFilePath(fileName);
+
+    production ? localUploadFile(herokuPath, s3Object) : localUploadFile(localPath, s3Object);
     
+    const filePath = production ? herokuPath : localPath ;
     
-    const filePath = `${config.fileUrl}/${fileName}`;
-    
-    res.json({ filePath: tmpPath });
+    res.json({ filePath });
   } catch (err) {
     next(err);
   }
@@ -42,8 +43,7 @@ const processFile = async (req, res, next) => {
     console.log('\n\n FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', req.file);
 
     const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
-    const herokuPath = path.join(__dirname, '../../..', 'tmp', filename);
-    const localPath = path.join(__dirname, '../..', 'tmp', filename);
+    const { herokuPath, localPath } = buildFilePath(filename);
 
     const filePath = production ? herokuPath : localPath;
 
@@ -67,30 +67,15 @@ const processFile = async (req, res, next) => {
 
     production ? uploadFile(processedFile, filename) : localUploadFile(filePath, processedFile);
     
-    // const filePath = production
-    //   ? `${config.fileUrl}/${fileName}`
-    //   : path.join(__dirname, '../..', 'tmp', fileName);
-
-    // // Update /uploads with the processed file
-
-    // // Upload file to S3 or local;
-    // if (production) {
-    //   await uploadFile(decodedFile, filename);
-    //   // localUploadFile(filePath, decodedFile);
-    //   // await saveFileS3(filename);
-    // } else {
-    //   fs.writeFileSync(filePath, decodedFile);
-    // }
-
-    // // Update database with file info
-    // await Files.findOneAndUpdate(
-    //   { email: req.user.email },
-    //   {
-    //     email: req.user.email,
-    //     $addToSet: { files: { ...req.file, loading: 'processed' } }
-    //   },
-    //   { upsert: true, new: true }
-    // ).exec();
+    // Update database with file info
+    await Files.findOneAndUpdate(
+      { email: req.user.email },
+      {
+        email: req.user.email,
+        $addToSet: { files: { ...req.file, loading: 'processed' } }
+      },
+      { upsert: true, new: true }
+    ).exec();
 
     res.json({ file: req.file, success: true });
     res.status(200);
@@ -125,7 +110,8 @@ const deleteProcessedFile = async (req, res, next) => {
       { _id: 0, __v: 0 }
     ).exec();
 
-    const filePath = path.join(__dirname, '../..', 'tmp', filename);
+    const { herokuPath, localPath } = buildFilePath(filename);
+    const filePath = production ? herokuPath : localPath;
 
     production ? await deleteFile(filename) : fs.unlinkSync(filePath);
 
