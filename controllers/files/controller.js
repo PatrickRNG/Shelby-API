@@ -43,8 +43,8 @@ const downloadFile = (req, res, next) => {
     const { fileName } = req.params;
     const downloadUrl = getDownloadUrl(fileName);
     console.log('\n\n >>>>>>', downloadUrl);
-    res.redirect(downloadUrl);
-    res.status(200).json({ success: true });
+    // res.redirect(downloadUrl);
+    res.status(200).json({ downloadUrl, success: true });
   } catch (err) {
     next(err);
   }

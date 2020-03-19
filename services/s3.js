@@ -8,7 +8,8 @@ const BUCKET = config.s3Bucket;
 
 const s3 = new AWS.S3({
   accessKeyId: ID,
-  secretAccessKey: SECRET
+  secretAccessKey: SECRET,
+  signatureVersion: 'v4'
 });
 
 const uploadFile = async (fileContent, fileName) => {
