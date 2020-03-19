@@ -11,7 +11,7 @@ const {
   base64_decode,
   localUploadFile
 } = require('../../utils/files');
-const { uploadFile, deleteFile, getDownloadUrl, getFile } = require('../../services/s3');
+const { uploadFile, deleteFile, getDownloadUrl } = require('../../services/s3');
 
 const production = config.env === 'production';
 
@@ -20,30 +20,10 @@ const buildFilePath = fileName => ({
   herokuPath: path.join(__dirname, '../../..', 'tmp', fileName)
 });
 
-// const downloadFile = async (req, res, next) => {
-//   try {
-//     const { fileName } = req.body;
-//     const s3Object = await getFile(fileName);
-//     console.log('\n\n 111111 FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', s3Object);
-//     const { herokuPath, localPath } = buildFilePath(fileName);
-
-//     production ? localUploadFile(herokuPath, s3Object) : localUploadFile(localPath, s3Object);
-    
-//     const filePath = production ? herokuPath : localPath ;
-    
-//     res.attachment(fileName);
-//     res.json({ filePath });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-
 const downloadFile = async (req, res, next) => {
   try {
     const { fileName } = req.params;
     const downloadUrl = await getDownloadUrl(fileName);
-    console.log('\n\n >>>>>>', downloadUrl);
-    // res.redirect(downloadUrl);
     res.status(200).json({ downloadUrl, success: true });
   } catch (err) {
     next(err);
@@ -53,8 +33,6 @@ const downloadFile = async (req, res, next) => {
 const processFile = async (req, res, next) => {
   try {
     const { filename } = req.file;
-    console.log('\n\n FILEEEEEEEEE >>>>>>>>>>>>>>>>>>>>>>>>> ', req.file);
-
     const dataApiUrl = `${config.dataApiUrl}/getEmentas2`;
     const { herokuPath, localPath } = buildFilePath(filename);
 

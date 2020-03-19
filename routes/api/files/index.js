@@ -30,7 +30,6 @@ const upload = multer({
   storage
 });
 
-// router.post('/upload', auth(['user']), upload.array('files'), sendFiles);
 router.get('/download/:fileName', auth(['user']), downloadFile);
 router.post('/process', auth(['user']), upload.single('file'), processFile);
 router.get('/processed', auth(['user']), getProcessedFiles);

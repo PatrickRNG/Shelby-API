@@ -44,20 +44,6 @@ const deleteFile = async fileName => {
   }
 };
 
-const getFile = async fileName => {
-  try {
-    const params = {
-      Bucket: BUCKET,
-      Key: fileName
-    };
-
-    return await s3.getObject(params).createReadStream();
-    // fs.writeFileSync(filePath, data.Body);
-  } catch (err) {
-    throw new Error(`Could not retrieve file from S3: ${err.message}`);
-  }
-};
-
 const getDownloadUrl = async fileName => {
   try {
     const params = {
@@ -74,6 +60,5 @@ const getDownloadUrl = async fileName => {
 module.exports = {
   uploadFile,
   deleteFile,
-  getFile,
   getDownloadUrl
 };
