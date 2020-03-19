@@ -16,8 +16,8 @@ const { uploadFile, deleteFile, getFile } = require('../../services/s3');
 const production = config.env === 'production';
 
 const buildFilePath = fileName => ({
-  localPath: path.join(__dirname, '../..', 'tmp', filename),
-  herokuPath: path.join(__dirname, '../../..', 'tmp', filename)
+  localPath: path.join(__dirname, '../..', 'tmp', fileName),
+  herokuPath: path.join(__dirname, '../../..', 'tmp', fileName)
 });
 
 const downloadFile = async (req, res, next) => {
