@@ -39,10 +39,15 @@ const buildFilePath = fileName => ({
 // };
 
 const downloadFile = (req, res, next) => {
-  const { fileName } = req.query;
-  const downloadUrl = getDownloadUrl(fileName);
-  res.redirect(downloadUrl);
-  res.status(200).json({ success: true });
+  try {
+    const { fileName } = req.params;
+    const downloadUrl = getDownloadUrl(fileName);
+    console.log('\n\n >>>>>>', downloadUrl);
+    res.redirect(downloadUrl);
+    res.status(200).json({ success: true });
+  } catch (err) {
+    next(err);
+  }
 }
 
 const processFile = async (req, res, next) => {
