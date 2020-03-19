@@ -38,10 +38,10 @@ const buildFilePath = fileName => ({
 //   }
 // };
 
-const downloadFile = (req, res, next) => {
+const downloadFile = async (req, res, next) => {
   try {
     const { fileName } = req.params;
-    const downloadUrl = getDownloadUrl(fileName);
+    const downloadUrl = await getDownloadUrl(fileName);
     console.log('\n\n >>>>>>', downloadUrl);
     // res.redirect(downloadUrl);
     res.status(200).json({ downloadUrl, success: true });

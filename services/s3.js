@@ -9,6 +9,7 @@ const BUCKET = config.s3Bucket;
 const s3 = new AWS.S3({
   accessKeyId: ID,
   secretAccessKey: SECRET,
+  region: 'us-east-2',
   signatureVersion: 'v4'
 });
 
@@ -57,14 +58,14 @@ const getFile = async fileName => {
   }
 };
 
-const getDownloadUrl = fileName => {
+const getDownloadUrl = async fileName => {
   try {
     const params = {
       Bucket: BUCKET,
       Key: fileName
     };
 
-    return s3.getSignedUrl('getObject', params);
+    return await s3.getSignedUrlPromise('getObject', params);
   } catch (err) {
     throw new Error(`Could not retrieve file from S3: ${err.message}`);
   }
